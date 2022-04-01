@@ -1,8 +1,20 @@
 
 import numpy as np
-from scipy.misc import imread, imsave
+from cv2 import imread, imwrite
 import os
+from glob import glob
 
+def get_aerial_images():
+    aerial_images = []
+    for parent_directory in glob('/kaggle/input/aerial-tiles-extraction-0-5000/aerials/*'):
+        directory_images = sorted(glob(parent_directory + '/*'))
+        aerial_images.extend(directory_images)
+    return sorted(aerial_images)
+
+
+def create_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 def sample_within_bounds(signal, x, y, bounds):
 
@@ -45,7 +57,7 @@ def sample_bilinear(signal, rx, ry):
 
 
 ############################ Apply Polar Transform to Aerial Images in CVUSA Dataset #############################
-S = 750  # Original size of the aerial image
+S = 400  # Original size of the aerial image
 height = 128  # Height of polar transformed aerial image
 width = 512   # Width of polar transformed aerial image
 
@@ -56,61 +68,15 @@ jj, ii = np.meshgrid(j, i)
 y = S/2. - S/2./height*(height-1-ii)*np.sin(2*np.pi*jj/width)
 x = S/2. + S/2./height*(height-1-ii)*np.cos(2*np.pi*jj/width)
 
-input_dir = '../Data/CVUSA/bingmap/19/'
-output_dir = '../Data/CVUSA/polarmap/19/'
+output_dir = '/kaggle/working/polar_aerial_images/'
 
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+create_directory(output_dir)
 
-images = os.listdir(input_dir)
+aerial_images = get_aerial_images()
 
-for img in images:
-    signal = imread(input_dir + img)
+for img in aerial_images:
+    signal = imread(img)
     image = sample_bilinear(signal, x, y)
-    imsave(output_dir + img.replace('.jpg', '.png'), image)
-
-
-############################ Apply Polar Transform to Aerial Images in CVACT Dataset #############################
-S = 1200
-height = 128
-width = 512
-
-i = np.arange(0, height)
-j = np.arange(0, width)
-jj, ii = np.meshgrid(j, i)
-
-y = S/2. - S/2./height*(height-1-ii)*np.sin(2*np.pi*jj/width)
-x = S/2. + S/2./height*(height-1-ii)*np.cos(2*np.pi*jj/width)
-
-
-input_dir = '../Data/ANU_data_small/satview_polish/'
-output_dir = '../Data/CVACT/polarmap/'
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
-images = os.listdir(input_dir)
-
-for img in images:
-    signal = imread(input_dir + img)
-    image = sample_bilinear(signal, x, y)
-    imsave(output_dir + img.replace('jpg','png'), image)
-
-
-############################ Prepare Street View Images in CVACT to Accelerate Training Time #############################
-import cv2
-input_dir = '../Data/ANU_data_small/streetview/'
-output_dir = '../Data/CVACT/streetview/'
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
-images = os.listdir(input_dir)
-
-for img in images:
-    signal = imread(input_dir + img)
-
-    start = int(832 / 4)
-    image = signal[start: start + int(832 / 2), :, :]
-    image = cv2.resize(image, (512, 128), interpolation=cv2.INTER_AREA)
-    imsave(output_dir + img.replace('.jpg', '.png'), image)
+    trajectory_dir = output_dir + img[53:-7]
+    create_directory(trajectory_dir)
+    imwrite(trajectory_dir + img[71:], image)
