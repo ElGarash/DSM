@@ -74,7 +74,7 @@ create_directory(output_dir)
 
 aerial_images = get_aerial_images()
 
-for img in aerial_images:
+for img in aerial_images[:10000]:
     signal = imread(img)
     image = sample_bilinear(signal, x, y)
     trajectory_dir = output_dir + img[53:-7]
