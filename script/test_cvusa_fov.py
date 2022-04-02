@@ -20,8 +20,6 @@ parser = argparse.ArgumentParser(description='TensorFlow implementation.')
 
 parser.add_argument('--network_type', type=str, help='network type', default='VGG_13_conv_v2_cir')
 
-parser.add_argument('--start_epoch', type=int, help='from epoch', default=25)
-parser.add_argument('--number_of_epoch', type=int, help='number_of_epoch', default=100)
 parser.add_argument('--polar', type=int, help='0 or 1', default=1)
 
 parser.add_argument('--train_grd_noise', type=int, help='0~360', default=360)
@@ -36,7 +34,6 @@ args = parser.parse_args()
 # the type of network to be used: "CVM-NET-I" or "CVM-NET-II"
 network_type = args.network_type
 
-start_epoch = args.start_epoch
 polar = args.polar
 
 train_grd_noise = args.train_grd_noise
@@ -45,16 +42,12 @@ test_grd_noise = args.test_grd_noise
 train_grd_FOV = args.train_grd_FOV
 test_grd_FOV = args.test_grd_FOV
 
-number_of_epoch = args.number_of_epoch
 
 data_type = 'CVUSA'
-
-loss_type = 'l1'
 
 batch_size = 32
 is_training = False
 loss_weight = 10.0
-# number_of_epoch = 100
 
 learning_rate_val = 1e-5
 keep_prob_val = 0.8
@@ -106,6 +99,7 @@ if __name__ == '__main__':
     tf.reset_default_graph()
 
     # import data
+    # TODO: Adjust the input path (done)
     input_data = InputData()
 
     width = int(test_grd_FOV / 360 * 512)
@@ -150,7 +144,8 @@ if __name__ == '__main__':
 
         print('load model...')
 
-        load_model_path = '../Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
+        # TODO: Adjust this path (done?)
+        load_model_path = '/kaggle/working/DSM_Model_Unzipped/Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
                           + '/train_grd_noise_' + str(train_grd_noise) + '/train_grd_FOV_' + str(train_grd_FOV) \
                           + '/model.ckpt'
         saver.restore(sess, load_model_path)
@@ -181,8 +176,9 @@ if __name__ == '__main__':
             grd_global_matrix[val_i: val_i + grd_matrix_val.shape[0], :] = grd_matrix_val
             orientation_gth[val_i: val_i + grd_matrix_val.shape[0]] = batch_orien
             val_i += sat_matrix_val.shape[0]
-
-        file = '../Result/CVUSA/Descriptor/' \
+        
+        # TODO: Adjust this path (done?)
+        file = '/kaggle/working/Result/CVUSA/Descriptor/' \
                + 'train_grd_noise_' + str(train_grd_noise) + '_train_grd_FOV_' + str(train_grd_FOV) \
                + 'test_grd_noise_' + str(test_grd_noise) + '_test_grd_FOV_' + str(test_grd_FOV) \
                + '_' + network_type + '.mat'
