@@ -96,7 +96,7 @@ def compute_loss(dist_array):
 
 if __name__ == '__main__':
 
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
     # import data
     # TODO: Adjust the input path (done)
