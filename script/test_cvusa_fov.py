@@ -17,7 +17,8 @@ import scipy.io as scio
 from numpy import fft
 
 
-tf.compat.v1.disable_eager_execution()
+# Disable eager execution
+tf.disable_eager_execution()
 
 
 parser = argparse.ArgumentParser(description='TensorFlow implementation.')
