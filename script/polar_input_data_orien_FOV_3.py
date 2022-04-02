@@ -6,6 +6,8 @@ from os import path, listdir
 
 class InputData:
     def __init__(self):
+        self.__cur_test_id = 0  # for training
+
         """Return dictionary of aerials path key and tuple of ground dir path, number of taken aerials and number of taken grounds"""
         grds_root_path = "/kaggle/input"
         aerials_root_path = "/kaggle/input/polar-aerial-images/polar_aerial_images/"
