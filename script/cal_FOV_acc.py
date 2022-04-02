@@ -12,7 +12,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import numpy as np
 import scipy.io as scio
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import argparse
 
