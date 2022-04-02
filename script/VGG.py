@@ -57,9 +57,9 @@ class VGG16(object):
                    name='layer_conv', activation_function=tf.nn.relu):
         with tf.variable_scope(name): # reuse=tf.AUTO_REUSE
             weight = tf.get_variable(name='weights', shape=[kernel_dim, kernel_dim, input_dim, output_dim],
-                                     trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
+                                     trainable=trainable, initializer=tf.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"))
             bias = tf.get_variable(name='biases', shape=[output_dim],
-                                   trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
+                                   trainable=trainable, initializer=tf.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"))
 
             if activated:
                 out = activation_function(self.conv2d(x, weight) + bias)
@@ -73,9 +73,9 @@ class VGG16(object):
                    name='layer_conv', activation_function=tf.nn.relu):
         with tf.variable_scope(name): # reuse=tf.AUTO_REUSE
             weight = tf.get_variable(name='weights', shape=[kernel_dim, kernel_dim, input_dim, output_dim],
-                                     trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
+                                     trainable=trainable, initializer=tf.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"))
             bias = tf.get_variable(name='biases', shape=[output_dim],
-                                   trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
+                                   trainable=trainable, initializer=tf.keras.initializers.VarianceScaling(scale=1.0, mode="fan_avg", distribution="uniform"))
 
             if activated:
                 out = activation_function(self.conv2d(x, weight, strides) + bias)
