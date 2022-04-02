@@ -47,9 +47,9 @@ class InputData:
         self.id_test_list = (aerials_files_path_polar, aerial_files_path, ground_files_path)
         self.test_data_size = len(self.id_test_list[0])
 
-        print(f'Number of polar aerial images {self.test_data_size[0]}')
-        print(f'Number of aerial images {self.test_data_size[1]}')
-        print(f'Number of ground images {self.id_test_list[2]}')
+        print(f'Number of polar aerial images {len(self.id_test_list[0])}')
+        print(f'Number of aerial images {len(self.id_test_list[1])}')
+        print(f'Number of ground images {len(self.id_test_list[2])}')
 
         # [[polar, sat, ground, annotation],[polar, sat, ground, annotation]]
         # ([polars....], [...sat], [...ground])
