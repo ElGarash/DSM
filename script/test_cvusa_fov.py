@@ -9,7 +9,7 @@ from cir_net_FOV import *
 from polar_input_data_orien_FOV_3 import InputData
 from distance import *
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 
 import argparse
@@ -96,7 +96,7 @@ def compute_loss(dist_array):
 
 if __name__ == '__main__':
 
-    tf.compat.v1.reset_default_graph()
+    tf.reset_default_graph()
 
     # import data
     # TODO: Adjust the input path (done)
