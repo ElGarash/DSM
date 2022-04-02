@@ -16,6 +16,10 @@ import argparse
 import scipy.io as scio
 from numpy import fft
 
+
+tf.compat.v1.disable_eager_execution()
+
+
 parser = argparse.ArgumentParser(description='TensorFlow implementation.')
 
 parser.add_argument('--network_type', type=str, help='network type', default='VGG_13_conv_v2_cir')
