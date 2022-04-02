@@ -1,10 +1,10 @@
-# import tensorflow as tf
+# import tensorflow.compat.v1 as tf
 
 from VGG import VGG16
 from VGG_cir import VGG16_cir
 
 # from utils import *
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 
 

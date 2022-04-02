@@ -6,7 +6,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 from cir_net_FOV import *
 from distance import *
 from OriNet_CVACT.input_data_act_polar_3 import InputData
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import argparse
 from tensorflow.python.ops.gen_math_ops import *
