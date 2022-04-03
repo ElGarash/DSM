@@ -182,11 +182,16 @@ if __name__ == '__main__':
             orientation_gth[val_i: val_i + grd_matrix_val.shape[0]] = batch_orien
             val_i += sat_matrix_val.shape[0]
         
-        # TODO: Adjust this path (done?)
-        file = '/kaggle/working/Result/CVUSA/Descriptor/' \
-               + 'train_grd_noise_' + str(train_grd_noise) + '_train_grd_FOV_' + str(train_grd_FOV) \
-               + 'test_grd_noise_' + str(test_grd_noise) + '_test_grd_FOV_' + str(test_grd_FOV) \
-               + '_' + network_type + '.mat'
+
+        descriptor_dir = '/kaggle/working/Result/BDD/Descriptor/'
+        if not os.path.exists(descriptor_dir):
+                    os.makedirs(descriptor_dir)
+
+        file = descriptor_dir \
+                    + 'train_grd_noise_' + str(train_grd_noise) + '_train_grd_FOV_' + str(train_grd_FOV) \
+                    + 'test_grd_noise_' + str(test_grd_noise) + '_test_grd_FOV_' + str(test_grd_FOV) \
+                    + '_' + network_type + '.mat'
+
         scio.savemat(file, {'orientation_gth': orientation_gth,
                             'grd_descriptor': grd_global_matrix, 'sat_descriptor': sat_global_matrix})
         grd_descriptor = grd_global_matrix
