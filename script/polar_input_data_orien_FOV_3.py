@@ -17,7 +17,7 @@ class InputData:
         aerial_files_path = []
         ground_files_path = []
 
-        for grd_part in grd_parts[:5]:
+        for grd_part in grd_parts:
             part_path = f'{grds_root_path}/{grd_part}/frames'
             for simple_dir in listdir(part_path): 
 
@@ -43,18 +43,16 @@ class InputData:
             else:
                 i +=1
 
-        ground_files_path = [path[0] for path in ground_files_path]
-        aerials_files_path_polar = [path.replace('/polar-aerial-images/polar_aerial_images/', '/aerial-tiles-extraction-0-5000/aerials/') for path in aerial_files_path]
+        ground_files_path = [path[0] for path in ground_files_path] # Retrieve the first ground image and drop the remainingf
+        aerial_files_path_normal = [path.replace('/polar-aerial-images/polar_aerial_images/', '/aerial-tiles-extraction-0-5000/aerials/') for path in aerial_files_path]
 
-        self.id_test_list = (aerials_files_path_polar, aerial_files_path, ground_files_path)
+        self.id_test_list = (aerial_files_path, aerial_files_path_normal, ground_files_path)
         self.test_data_size = len(self.id_test_list[0])
 
         print(f'Number of polar aerial images {len(self.id_test_list[0])}')
         print(f'Number of aerial images {len(self.id_test_list[1])}')
         print(f'Number of ground images {len(self.id_test_list[2])}')
 
-        # [[polar, sat, ground, annotation],[polar, sat, ground, annotation]]
-        # ([polars....], [...sat], [...ground])
 
     def next_batch_scan(self, batch_size, grd_noise=360, FOV=360):
         if self.__cur_test_id >= self.test_data_size:
