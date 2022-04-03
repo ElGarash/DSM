@@ -76,7 +76,7 @@ class InputData:
                 
             # satellite polar
             img = cv2.imread(self.id_test_list[0][img_idx])
-            # img = cv2.resize(img, (616, 112), interpolation=cv2.INTER_AREA)
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
             img = img.astype(np.float32)
             # img -= 100.0
             img[:, :, 0] -= 103.939  # Blue
