@@ -214,6 +214,7 @@ if __name__ == '__main__':
 
             scio.savemat(file, {'loc_acc': loc_acc,
                                 'grd_descriptor': grd_descriptor, 'sat_descriptor': sat_descriptor})
+            print(loc_acc)
 
         else:
 
