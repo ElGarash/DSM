@@ -34,6 +34,7 @@ parser.add_argument('--train_grd_FOV', type=int, help='70, 90, 100, 120, 180, 36
 parser.add_argument('--test_grd_FOV', type=int, help='70, 90, 100, 120, 180, 360', default=360)
 
 args = parser.parse_args()
+print(args)
 
 # --------------  configuration parameters  -------------- #
 # the type of network to be used: "CVM-NET-I" or "CVM-NET-II"
