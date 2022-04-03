@@ -43,10 +43,19 @@ class InputData:
             else:
                 i +=1
 
+
         ground_files_path = [path[0] for path in ground_files_path] # Retrieve the first ground image and drop the remainingf
         aerial_files_path_normal = [path.replace('/polar-aerial-images/polar_aerial_images/', '/aerial-tiles-extraction-0-5000/aerials/') for path in aerial_files_path]
 
-        self.id_test_list = (aerial_files_path, aerial_files_path_normal, ground_files_path)
+        SELECTED_INDICES_1 =  [210, 211, 212, 290, 305, 319, 330, 355, 400, 505, 740, 800, 840, 900, 870, 935, 960, 965, 967, 990, 1006, 1020, 1095, 1135, 1200, 1204, 1218, 1229, 1297, 1305, 1311, 1355, 1380, 1382, 1497, 1500, 1585, 1595, 1600, 1900, 1960, 1980, 1995, 2020, 2050, 2210, 2220, 2225, 2280, 2400, 2395, 2437, 2545, 2705, 3010, 3025, 3080, 3110, 3235, 3505, 3870, 4400, 4410, 5500, 6010]
+        SELECTED_INDICES_2 =  [7536, 7566, 7596, 7616, 7621, 7626, 7641, 7651, 7661, 7676, 7691, 7706, 7711, 7726, 7741, 7751, 7766, 7796, 7816, 7836, 7846, 7906, 7956, 7996, 8156, 8166, 8231, 8321, 8351, 8481, 8596, 8626, 8646, 8691, 8761, 8781, 8836, 8876, 8896, 8916, 8951, 9011, 9121, 9201, 9336, 9346, 9381, 9571, 9586, 9596, 9601, 9666, 9736, 10166, 12461]
+        SELECTED_INDICES = SELECTED_INDICES_1 + SELECTED_INDICES_2
+        SELECTED_AERIAL_POLAR = [aerial_files_path[index] for index in SELECTED_INDICES]
+        SELECTED_AERIAL_NORMAL = [aerial_files_path_normal[index] for index in SELECTED_INDICES]
+        SELECTED_GROUND = [ground_files_path[index] for index in SELECTED_INDICES]
+
+        # self.id_test_list = (aerial_files_path, aerial_files_path_normal, ground_files_path)
+        self.id_test_list = (SELECTED_AERIAL_POLAR, SELECTED_AERIAL_NORMAL, SELECTED_GROUND)
         self.test_data_size = len(self.id_test_list[0])
 
         print(f'Number of polar aerial images {len(self.id_test_list[0])}')
