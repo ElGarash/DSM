@@ -26,7 +26,6 @@ parser = argparse.ArgumentParser(description='TensorFlow implementation.')
 parser.add_argument('--network_type', type=str, help='network type', default='VGG_13_conv_v2_cir')
 
 parser.add_argument('--start_epoch', type=int, help='from epoch', default=25)
-parser.add_argument('--number_of_epoch', type=int, help='number_of_epoch', default=100)
 parser.add_argument('--polar', type=int, help='0 or 1', default=1)
 
 parser.add_argument('--train_grd_noise', type=int, help='0~360', default=360)
@@ -36,6 +35,7 @@ parser.add_argument('--train_grd_FOV', type=int, help='70, 90, 100, 120, 180, 36
 parser.add_argument('--test_grd_FOV', type=int, help='70, 90, 100, 120, 180, 360', default=360)
 
 args = parser.parse_args()
+print(args)
 
 # --------------  configuration parameters  -------------- #
 # the type of network to be used: "CVM-NET-I" or "CVM-NET-II"
@@ -50,8 +50,6 @@ test_grd_noise = args.test_grd_noise
 train_grd_FOV = args.train_grd_FOV
 test_grd_FOV = args.test_grd_FOV
 
-number_of_epoch = args.number_of_epoch
-
 data_type = 'CVUSA'
 
 loss_type = 'l1'
@@ -59,13 +57,6 @@ loss_type = 'l1'
 batch_size = 32
 is_training = False
 loss_weight = 10.0
-# number_of_epoch = 100
-
-learning_rate_val = 1e-5
-keep_prob_val = 0.8
-
-dimension = 4
-
 
 # -------------------------------------------------------- #
 
@@ -155,7 +146,7 @@ if __name__ == '__main__':
 
         print('load model...')
 
-        load_model_path = '../Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
+        load_model_path = '/kaggle/working/models/DSM/Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
                           + '/train_grd_noise_' + str(train_grd_noise) + '/train_grd_FOV_' + str(train_grd_FOV) \
                           + '/model.ckpt'
         saver.restore(sess, load_model_path)
@@ -166,7 +157,7 @@ if __name__ == '__main__':
         # ---------------------- validation ----------------------
 
         print('validate...')
-        print('   compute global descriptors')
+        print('compute global descriptors')
         input_data.reset_scan()
 
         np.random.seed(2019)
@@ -188,7 +179,7 @@ if __name__ == '__main__':
             val_i += sat_matrix_val.shape[0]
         
 
-        descriptor_dir = '/kaggle/working/Result/BDD/Descriptor/'
+        descriptor_dir = '/kaggle/working/descriptors/DSM/'
         if not os.path.exists(descriptor_dir):
                     os.makedirs(descriptor_dir)
 

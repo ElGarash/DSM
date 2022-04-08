@@ -5,14 +5,10 @@ import numpy as np
 
 
 class InputData:
-
-    img_root = '../../Data/CVUSA/'
-
-
     def __init__(self, data_type='CVUSA'):
-
+        self.img_root_polar =  '/kaggle/input/dsm-dynamic-similarity-matching/Data/CVUSA/'
         self.data_type = data_type
-        self.img_root = '../../Data/' + self.data_type + '/'
+        self.img_root = "/kaggle/input/cvusa-dataset/cvusa-localization/"
 
         self.train_list = self.img_root + 'splits/train-19zl.csv'
         self.test_list = self.img_root + 'splits/val-19zl.csv'
@@ -70,7 +66,7 @@ class InputData:
 #            print(self.id_test_list[img_idx][0])
 
             # satellite polar
-            img = cv2.imread(self.img_root + self.id_test_list[img_idx][0])
+            img = cv2.imread(self.img_root_polar + self.id_test_list[img_idx][0])
             # img = cv2.resize(img, (616, 112), interpolation=cv2.INTER_AREA)
             img = img.astype(np.float32)
             # img -= 100.0
@@ -139,7 +135,7 @@ class InputData:
             i += 1
 
             # satellite polar
-            img = cv2.imread(self.img_root + self.id_list[img_idx][0])
+            img = cv2.imread(self.img_root_polar + self.id_list[img_idx][0])
             if img is None or img.shape[0] != 128 or img.shape[1] != 512:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.img_root + self.id_list[img_idx][0], i), img.shape)
                 continue
