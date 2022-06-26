@@ -51,7 +51,8 @@ class InputData:
 
 
         self.val_inds = anuData['valSet']['valInd'][0][0] - 1
-        self.valNum = len(self.val_inds)
+        # self.valNum = len(self.val_inds)
+        self.valNum = 100
 
         self.valList = []
         for k in range(self.valNum):
