@@ -63,15 +63,9 @@ if __name__ == '__main__':
     # define placeholders
     width = int(test_grd_FOV / 360 * 512)
     grd_x = tf.placeholder(tf.float32, [None, 128, width, 3], name='grd_x')
-    sat_x = tf.placeholder(tf.float32, [None, 256, 256, 3], name='sat_x')
     polar_sat_x = tf.placeholder(tf.float32, [None, 128, 512, 3], name='polar_sat_x')
 
-    grd_orien = tf.placeholder(tf.int32, [None], name='grd_orien')
-
-    utms_x = tf.placeholder(tf.float32, [None, None, 1], name='utms')
-
     keep_prob = tf.placeholder(tf.float32)
-    learning_rate = tf.placeholder(tf.float32)
 
     # build model
     sat_matrix, grd_matrix, distance, pred_orien = VGG_13_conv_v2_cir(polar_sat_x, grd_x, keep_prob, trainable=False)
@@ -80,8 +74,6 @@ if __name__ == '__main__':
     g_height, g_width, g_channel = grd_matrix.get_shape().as_list()[1:]
     sat_global_matrix = np.zeros([input_data.get_test_dataset_size(), s_height, s_width, s_channel])
     grd_global_matrix = np.zeros([input_data.get_test_dataset_size(), g_height, g_width, g_channel])
-    orientation_gth = np.zeros([input_data.get_test_dataset_size()])
-    pred_orientation = np.zeros([input_data.get_test_dataset_size()])
 
     saver = tf.train.Saver(tf.global_variables(), max_to_keep=None)
 
@@ -113,9 +105,8 @@ if __name__ == '__main__':
 
         val_i = 0
         while True:
-            batch_sat_polar, batch_sat, batch_grd, _, batch_orien = input_data.next_batch_scan(batch_size, grd_noise=test_grd_noise,
-                                                                              FOV=test_grd_FOV)
-            if batch_sat is None:
+            batch_sat_polar, batch_grd = input_data.next_batch_scan(batch_size, grd_noise=test_grd_noise, FOV=test_grd_FOV)
+            if batch_sat_polar is None:
                 break
 
             feed_dict = {grd_x: batch_grd, polar_sat_x: batch_sat_polar, keep_prob: 1.0}
@@ -123,7 +114,6 @@ if __name__ == '__main__':
 
             sat_global_matrix[val_i: val_i + sat_matrix_val.shape[0], :] = sat_matrix_val
             grd_global_matrix[val_i: val_i + grd_matrix_val.shape[0], :] = grd_matrix_val
-            orientation_gth[val_i: val_i + grd_matrix_val.shape[0]] = batch_orien
             val_i += sat_matrix_val.shape[0]
 
 
