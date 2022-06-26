@@ -1,4 +1,5 @@
 import os
+import pickle
 
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
@@ -18,8 +19,6 @@ parser = argparse.ArgumentParser(description='TensorFlow implementation.')
 
 parser.add_argument('--network_type', type=str, help='network type', default='VGG_13_conv_v2_cir')
 
-parser.add_argument('--start_epoch', type=int, help='from epoch', default=25)
-parser.add_argument('--number_of_epoch', type=int, help='number_of_epoch', default=100)
 parser.add_argument('--polar', type=int, help='0 or 1', default=1)
 
 parser.add_argument('--train_grd_noise', type=int, help='0~360', default=360)
@@ -34,7 +33,6 @@ args = parser.parse_args()
 # --------------  configuration parameters  -------------- #
 network_type = args.network_type
 
-start_epoch = args.start_epoch
 polar = args.polar
 
 train_grd_noise = args.train_grd_noise
@@ -43,26 +41,20 @@ test_grd_noise = args.test_grd_noise
 train_grd_FOV = args.train_grd_FOV
 test_grd_FOV = args.test_grd_FOV
 
-number_of_epoch = args.number_of_epoch
-
 data_type = 'CVACT'
 
-loss_type = 'l1'
+batch_size = 8
 
-batch_size = 32
-is_training = False
-loss_weight = 10.0
-# number_of_epoch = 100
-
-learning_rate_val = 1e-5
-keep_prob_val = 0.8
-
-dimension = 4
+DESCRIPTORS_DIRECTORY = '/kaggle/working/descriptors/DSM/'
 
 
 # -------------------------------------------------------- #
 
 if __name__ == '__main__':
+    if os.path.exists(f"{DESCRIPTORS_DIRECTORY}/satellite_descriptors.pkl") or os.path.exists(f"{DESCRIPTORS_DIRECTORY}/ground_descriptors.pkl"):
+        print("Either satellite or ground descriptors already exist on the file system.")
+        exit(0)
+        
     tf.reset_default_graph()
 
     # import data
@@ -82,7 +74,7 @@ if __name__ == '__main__':
     learning_rate = tf.placeholder(tf.float32)
 
     # build model
-    sat_matrix, grd_matrix, distance, pred_orien = VGG_13_conv_v2_cir(polar_sat_x, grd_x, keep_prob, is_training)
+    sat_matrix, grd_matrix, distance, pred_orien = VGG_13_conv_v2_cir(polar_sat_x, grd_x, keep_prob, is_training=False)
 
     s_height, s_width, s_channel = sat_matrix.get_shape().as_list()[1:]
     g_height, g_width, g_channel = grd_matrix.get_shape().as_list()[1:]
@@ -105,7 +97,7 @@ if __name__ == '__main__':
 
         print('load model...')
 
-        load_model_path = '../Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
+        load_model_path = '/kaggle/working/models/DSM/Model/polar_' + str(polar) + '/' + data_type + '/' + network_type \
                           + '/train_grd_noise_' + str(train_grd_noise) + '/train_grd_FOV_' + str(train_grd_FOV) \
                           + '/model.ckpt'
         saver.restore(sess, load_model_path)
@@ -115,63 +107,42 @@ if __name__ == '__main__':
 
         # ---------------------- validation ----------------------
         print('validate...')
-        print('   compute global descriptors')
+        print('compute global descriptors')
         input_data.reset_scan()
         np.random.seed(2019)
 
         val_i = 0
         while True:
-            print('      progress %d' % val_i)
             batch_sat_polar, batch_sat, batch_grd, _, batch_orien = input_data.next_batch_scan(batch_size, grd_noise=test_grd_noise,
                                                                               FOV=test_grd_FOV)
             if batch_sat is None:
                 break
+
             feed_dict = {grd_x: batch_grd, polar_sat_x: batch_sat_polar, keep_prob: 1.0}
-            sat_matrix_val, grd_matrix_val = \
-                sess.run([sat_matrix, grd_matrix], feed_dict=feed_dict)
+            sat_matrix_val, grd_matrix_val = sess.run([sat_matrix, grd_matrix], feed_dict=feed_dict)
 
             sat_global_matrix[val_i: val_i + sat_matrix_val.shape[0], :] = sat_matrix_val
             grd_global_matrix[val_i: val_i + grd_matrix_val.shape[0], :] = grd_matrix_val
             orientation_gth[val_i: val_i + grd_matrix_val.shape[0]] = batch_orien
             val_i += sat_matrix_val.shape[0]
 
-        print('   compute accuracy')
+
+        if not os.path.exists(DESCRIPTORS_DIRECTORY):
+            os.makedirs(DESCRIPTORS_DIRECTORY)
+
         grd_descriptor = grd_global_matrix
         sat_descriptor = sat_global_matrix
 
-        descriptor_dir = '../Result/CVACT/Descriptor/'
-        if not os.path.exists(descriptor_dir):
-            os.makedirs(descriptor_dir)
-
-        file = descriptor_dir \
-               + 'train_grd_noise_' + str(train_grd_noise) + '_train_grd_FOV_' + str(train_grd_FOV) \
-               + 'test_grd_noise_' + str(test_grd_noise) + '_test_grd_FOV_' + str(test_grd_FOV) \
-               + '_' + network_type + '.mat'
-        scio.savemat(file, {'grd_descriptor': grd_descriptor, 'sat_descriptor': sat_descriptor,
-                            'orientation_gth': orientation_gth})
-
         data_amount = grd_descriptor.shape[0]
-        top1_percent = int(data_amount * 0.01) + 1
 
         if test_grd_noise==0:
             sat_descriptor = np.reshape(sat_global_matrix[:, :, :g_width, :], [-1, g_height * g_width * g_channel])
             sat_descriptor = sat_descriptor / np.linalg.norm(sat_descriptor, axis=-1, keepdims=True)
-
             grd_descriptor = np.reshape(grd_global_matrix, [-1, g_height * g_width * g_channel])
-
             dist_array = 2 - 2 * np.matmul(grd_descriptor, np.transpose(sat_descriptor))
-            gt_dist = dist_array.diagonal()
-            prediction = np.sum(dist_array < gt_dist.reshape(-1, 1), axis=-1)
-            loc_acc = np.sum(prediction.reshape(-1, 1) < np.arange(top1_percent), axis=0) / data_amount
-
-            scio.savemat(file, {'loc_acc': loc_acc,
-                                'grd_descriptor': grd_descriptor, 'sat_descriptor': sat_descriptor})
 
         else:
-
             sat_fft = fft.fft(sat_descriptor.transpose([0, 3, 1, 2]))[:, np.newaxis, ...]
-
-            loc_acc = np.zeros(top1_percent)
             for i in range(100):
                 print(i)
                 batch_start = int(data_amount * i / 100)
@@ -181,20 +152,14 @@ if __name__ == '__main__':
                     batch_end = data_amount
 
                 dist_array, pred_orien = corr_distance_FOV_np(grd_descriptor[batch_start: batch_end, :], sat_descriptor, sat_fft)
-                gt_dist = np.array(
-                    [dist_array[index, batch_start + index] for index in range(batch_end - batch_start)]).reshape(
-                    [batch_end - batch_start, 1])
-                pred_orientation[batch_start:batch_end] = pred_orien[batch_start:batch_end, :].diagonal()
 
-                prediction = np.sum(dist_array < gt_dist, axis=-1)
 
-                loc_acc += np.sum(prediction.reshape(-1, 1) < np.arange(top1_percent).reshape(1, -1), axis=0)
+        with open(f"{DESCRIPTORS_DIRECTORY}/satellite_descriptors.pkl", 'wb') as f:
+            pickle.dump(sat_descriptor, f)
 
-            loc_acc = loc_acc / data_amount
 
-            print(loc_acc)
+        with open(f"{DESCRIPTORS_DIRECTORY}/ground_descriptors.pkl", 'wb') as f:
+            pickle.dump(grd_descriptor, f)
 
-            scio.savemat(file, {'orientation_gth': orientation_gth, 'pred_orientation': pred_orientation,
-                                'loc_acc': loc_acc,
-                                'grd_descriptor': grd_descriptor, 'sat_descriptor': sat_descriptor})
-
+        with open(f"{DESCRIPTORS_DIRECTORY}/dist_array_total.pkl", 'wb') as f:
+            pickle.dump(dist_array, f)
