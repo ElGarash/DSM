@@ -43,7 +43,7 @@ test_grd_FOV = args.test_grd_FOV
 
 data_type = 'CVACT'
 
-batch_size = 2
+batch_size = 32
 
 DESCRIPTORS_DIRECTORY = '/kaggle/working/descriptors/DSM/'
 
@@ -105,6 +105,8 @@ if __name__ == '__main__':
 
         val_i = 0
         while True:
+            print('      progress %d' % val_i)
+
             batch_sat_polar, batch_grd = input_data.next_batch_scan(batch_size, grd_noise=test_grd_noise, FOV=test_grd_FOV)
             if batch_sat_polar is None:
                 break

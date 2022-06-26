@@ -9,7 +9,7 @@ class InputData:
     # the path of your CVACT dataset
 
     img_root = '/kaggle/input/cvact-small/'
-    img_root_polar = '/kaggle/input/cvact-polar-images/cvact-small/'
+    img_root_polar = '/kaggle/input/cvact-polar-images-dsm/cvact-small/'
 
     # yaw_pitch_grd = sio.loadmat('./CVACT_orientations/yaw_pitch_grd_CVACT.mat')
     # yaw_sat = sio.loadmat('./CVACT_orientations/yaw_radius_sat_CVACT.mat')
@@ -49,18 +49,6 @@ class InputData:
         self.all_data_size = len(self.id_alllist)
         print('InputData::__init__: load', self.allDataList, ' data_size =', self.all_data_size)
 
-
-        self.training_inds = anuData['trainSet']['trainInd'][0][0] - 1
-
-        self.trainNum = len(self.training_inds)
-
-        self.trainList = []
-        self.trainIdList = []
-        for k in range(self.trainNum):
-            self.trainList.append(self.id_alllist[self.training_inds[k][0]])
-            self.trainIdList.append(k)
-
-        self.__cur_id = 0  # for training
 
         self.val_inds = anuData['valSet']['valInd'][0][0] - 1
         self.valNum = len(self.val_inds)
@@ -124,72 +112,6 @@ class InputData:
 
 
         return batch_polar_sat, batch_grd
-
-    def next_pair_batch(self, batch_size, grd_noise=360, FOV=360):
-        if self.__cur_id == 0:
-            for i in range(20):
-                random.shuffle(self.trainIdList)
-
-        if self.__cur_id + batch_size + 2 >= self.trainNum:
-            self.__cur_id = 0
-            return None, None, None, None, None
-
-        batch_polar_sat = np.zeros([batch_size, 128, 512, 3], dtype=np.float32)
-
-        grd_width = int(FOV / 360 * 512)
-        batch_grd = np.zeros([batch_size, 128, grd_width, 3], dtype=np.float32)
-
-        i = 0
-        batch_idx = 0
-        while True:
-            if batch_idx >= batch_size or self.__cur_id + i >= self.trainNum:
-                break
-
-            img_idx = self.trainIdList[self.__cur_id + i]
-            i += 1
-
-            # polar satellite
-            img = cv2.imread(self.trainList[img_idx][-1])
-            if img is None:
-                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.trainList[img_idx][-1], i))
-                continue
-
-            img = img.astype(np.float32)
-
-            # normalize it to -1 --- 1
-            img[:, :, 0] -= 103.939  # Blue
-            img[:, :, 1] -= 116.779  # Green
-            img[:, :, 2] -= 123.6  # Red
-
-            batch_polar_sat[batch_idx, :, :, :] = img
-
-            # ground
-            img = cv2.imread(self.trainList[img_idx][0])
-
-            if img is None or img.shape[0] * 4 != img.shape[1]:
-                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.trainList[img_idx][0], i))
-                continue
-
-            img = img.astype(np.float32)
-
-            j = np.arange(0, 512)
-            random_shift = int(np.random.rand() * 512 * grd_noise / 360)
-            img_dup = img[:, ((j - random_shift) % 512)[:grd_width], :]
-
-            img_dup[:, :, 0] -= 103.939  # Blue
-            img_dup[:, :, 1] -= 116.779  # Green
-            img_dup[:, :, 2] -= 123.6  # Red
-            batch_grd[batch_idx, :, :, :] = img_dup
-
-
-            batch_idx += 1
-
-        self.__cur_id += i
-
-        return batch_polar_sat, batch_grd
-
-    def get_dataset_size(self):
-        return self.trainNum
 
     #
     def get_test_dataset_size(self):
