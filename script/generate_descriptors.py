@@ -43,7 +43,7 @@ test_grd_FOV = args.test_grd_FOV
 
 data_type = 'CVACT'
 
-batch_size = 8
+batch_size = 2
 
 DESCRIPTORS_DIRECTORY = '/kaggle/working/descriptors/DSM/'
 
