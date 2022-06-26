@@ -41,9 +41,9 @@ class InputData:
 
         idx = 0
         for i in range(0, len(anuData['panoIds'])):
-            grd_id_align = self.img_root_polar + 'streetview_polish/' + anuData['panoIds'][i] + '_grdView.png'
-            polar_sat_id_ori = self.img_root_polar + 'polarmap/' + anuData['panoIds'][i] + '_satView_polish.png'
-            sat_id_ori = self.img_root + 'satview_polish/' + anuData['panoIds'][i] + '_satView_polish.png'
+            grd_id_align = self.img_root_polar + 'streetview_polish/' + anuData['panoIds'][i] + '_grdView.jpg'
+            polar_sat_id_ori = self.img_root_polar + 'polarmap/' + anuData['panoIds'][i] + '_satView_polish.jpg'
+            sat_id_ori = self.img_root + 'satview_polish/satview_polish/' + anuData['panoIds'][i] + '_satView_polish.jpg'
 
             self.id_alllist.append([grd_id_align, sat_id_ori, anuData['utm'][i][0], anuData['utm'][i][1], polar_sat_id_ori])
             self.id_idx_alllist.append(idx)
