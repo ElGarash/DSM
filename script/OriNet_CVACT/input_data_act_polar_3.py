@@ -107,7 +107,7 @@ class InputData:
 
             # satellite
             img = cv2.imread(self.valList[img_idx][1])
-            # img = cv2.resize(img, (self.satSize, self.satSize), interpolation=cv2.INTER_AREA)
+            img = cv2.resize(img, (self.satSize, self.satSize), interpolation=cv2.INTER_AREA)
             if img is None or img.shape[0] != img.shape[1]:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][1], i))
                 continue
@@ -121,6 +121,8 @@ class InputData:
 
             # polar satellite
             img = cv2.imread(self.valList[img_idx][-1])
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
+
 
             if img is None or img.shape[0] != self.panoRows or img.shape[1] != self.panoCols:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][-1], i))
@@ -135,6 +137,8 @@ class InputData:
 
             # ground
             img = cv2.imread(self.valList[img_idx][0])
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
+
 
             if img is None or img.shape[0] * 4 != img.shape[1]:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][0], i))
@@ -201,6 +205,7 @@ class InputData:
 
             # satellite
             img = cv2.imread(self.trainList[img_idx][1])
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
             if img is None:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.trainList[img_idx][1], i))
                 continue
@@ -216,6 +221,7 @@ class InputData:
 
             # polar satellite
             img = cv2.imread(self.trainList[img_idx][-1])
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
             if img is None:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.trainList[img_idx][-1], i))
                 continue
@@ -231,6 +237,7 @@ class InputData:
 
             # ground
             img = cv2.imread(self.trainList[img_idx][0])
+            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
 
             if img is None or img.shape[0] * 4 != img.shape[1]:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.trainList[img_idx][0], i))
