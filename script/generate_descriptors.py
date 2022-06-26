@@ -74,7 +74,7 @@ if __name__ == '__main__':
     learning_rate = tf.placeholder(tf.float32)
 
     # build model
-    sat_matrix, grd_matrix, distance, pred_orien = VGG_13_conv_v2_cir(polar_sat_x, grd_x, keep_prob, is_training=False)
+    sat_matrix, grd_matrix, distance, pred_orien = VGG_13_conv_v2_cir(polar_sat_x, grd_x, keep_prob, trainable=False)
 
     s_height, s_width, s_channel = sat_matrix.get_shape().as_list()[1:]
     g_height, g_width, g_channel = grd_matrix.get_shape().as_list()[1:]
