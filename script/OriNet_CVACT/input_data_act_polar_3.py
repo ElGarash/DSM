@@ -76,7 +76,7 @@ class InputData:
 
             # polar satellite
             img = cv2.imread(self.valList[img_idx][-1])
-            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
+            # img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
 
 
             if img is None or img.shape[0] != self.panoRows or img.shape[1] != self.panoCols:
@@ -92,7 +92,7 @@ class InputData:
 
             # ground
             img = cv2.imread(self.valList[img_idx][0])
-            img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
+            # img = cv2.resize(img, (512, 128), interpolation=cv2.INTER_AREA)
 
 
             if img is None or img.shape[0] * 4 != img.shape[1]:
