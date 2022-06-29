@@ -108,7 +108,7 @@ class InputData:
 
             # satellite
             img = cv2.imread(self.valList[img_idx][1])
-            # img = cv2.resize(img, (self.satSize, self.satSize), interpolation=cv2.INTER_AREA)
+            img = cv2.resize(img, (self.satSize, self.satSize), interpolation=cv2.INTER_AREA)
             if img is None or img.shape[0] != img.shape[1]:
                 print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][1], i))
                 continue
