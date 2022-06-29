@@ -41,20 +41,12 @@ class InputData:
 
         idx = 0
         for i in range(0, len(anuData['panoIds'])):
-            grd_id_ori = self.img_root + '_' + anuData['panoIds'][i] + '/' + anuData['panoIds'][i] + '_zoom_2.jpg'
 
-            grd_id_align = self.img_root + 'streetview/' + anuData['panoIds'][i] + '_grdView.png'
-            grd_id_ori_sem = self.img_root + '_' + anuData['panoIds'][i] + '/' + anuData['panoIds'][
-                i] + '_zoom_2_sem.jpg'
-            grd_id_align_sem = self.img_root + '_' + anuData['panoIds'][i] + '/' + anuData['panoIds'][
-                i] + '_zoom_2_aligned_sem.jpg'
+            grd_id_align = self.img_root_polar + 'streetview_polish/' + anuData['panoIds'][i] + '_grdView.jpg'
+            polar_sat_id_ori = self.img_root_polar + 'polarmap/' + anuData['panoIds'][i] + '_satView_polish.jpg'
+            sat_id_ori = self.img_root + 'satview_polish/satview_polish/' + anuData['panoIds'][i] + '_satView_polish.jpg'
 
-            polar_sat_id_ori = self.img_root + 'polarmap/' + anuData['panoIds'][i] + '_satView_polish.png'
-
-            sat_id_ori = self.img_root + 'satview_polish/' + anuData['panoIds'][i] + '_satView_polish.png'
-            sat_id_sem = self.img_root + '_' + anuData['panoIds'][i] + '/' + anuData['panoIds'][i] + '_satView_sem.jpg'
-            self.id_alllist.append([grd_id_ori, grd_id_align, grd_id_ori_sem, grd_id_align_sem, sat_id_ori, sat_id_sem,
-                                    anuData['utm'][i][0], anuData['utm'][i][1], polar_sat_id_ori])
+            self.id_alllist.append([grd_id_align, sat_id_ori, anuData['utm'][i][0], anuData['utm'][i][1], polar_sat_id_ori])
             self.id_idx_alllist.append(idx)
             idx += 1
         self.all_data_size = len(self.id_alllist)
@@ -64,8 +56,8 @@ class InputData:
 
         self.utms_all = np.zeros([2, self.all_data_size], dtype=np.float32)
         for i in range(0, self.all_data_size):
-            self.utms_all[0, i] = self.id_alllist[i][6]
-            self.utms_all[1, i] = self.id_alllist[i][7]
+            self.utms_all[0, i] = self.id_alllist[i][2]
+            self.utms_all[1, i] = self.id_alllist[i][3]
 
         self.training_inds = anuData['trainSet']['trainInd'][0][0] - 1
 
@@ -115,10 +107,10 @@ class InputData:
             img_idx = self.__cur_test_id + i
 
             # satellite
-            img = cv2.imread(self.valList[img_idx][4])
+            img = cv2.imread(self.valList[img_idx][1])
             # img = cv2.resize(img, (self.satSize, self.satSize), interpolation=cv2.INTER_AREA)
             if img is None or img.shape[0] != img.shape[1]:
-                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][4], i))
+                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][1], i))
                 continue
 
             img = img.astype(np.float32)
@@ -132,7 +124,7 @@ class InputData:
             img = cv2.imread(self.valList[img_idx][-1])
 
             if img is None or img.shape[0] != self.panoRows or img.shape[1] != self.panoCols:
-                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][4], i))
+                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][-1], i))
                 continue
 
             img = img.astype(np.float32)
@@ -143,10 +135,10 @@ class InputData:
             batch_polar_sat[i, :, :, :] = img
 
             # ground
-            img = cv2.imread(self.valList[img_idx][1])
+            img = cv2.imread(self.valList[img_idx][0])
 
             if img is None or img.shape[0] * 4 != img.shape[1]:
-                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][2], i))
+                print('InputData::next_pair_batch: read fail: %s, %d, ' % (self.valList[img_idx][0], i))
                 continue
             img = cv2.resize(img, (self.panoCols, self.panoRows), interpolation=cv2.INTER_AREA)
             img = img.astype(np.float32)
