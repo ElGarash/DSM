@@ -22,7 +22,7 @@ parser.add_argument('--network_type', type=str, help='network type', default='VG
 parser.add_argument('--polar', type=int, help='0 or 1', default=1)
 
 parser.add_argument('--train_grd_noise', type=int, help='0~360', default=360)
-parser.add_argument('--test_grd_noise', type=int, help='0~360', default=360)
+parser.add_argument('--test_grd_noise', type=int, help='0~360', default=0)
 
 parser.add_argument('--train_grd_FOV', type=int, help='70, 90, 180, 360', default=360)
 parser.add_argument('--test_grd_FOV', type=int, help='70, 90, 180, 360', default=360)
