@@ -9,7 +9,7 @@ class InputData:
     # the path of your CVACT dataset
 
     img_root = '/kaggle/input/cvact-small/'
-    img_root_polar = '/kaggle/input/cvact-polar-images/cvact-small/'
+    img_root_polar = '/kaggle/input/cvact-polar-images-dsm/cvact-small/'
 
     # yaw_pitch_grd = sio.loadmat('./CVACT_orientations/yaw_pitch_grd_CVACT.mat')
     # yaw_sat = sio.loadmat('./CVACT_orientations/yaw_radius_sat_CVACT.mat')
